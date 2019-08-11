@@ -1,0 +1,24 @@
+
+
+raspi cam setup:
+sudo rpi-update
+sudo apt-get update
+sudo apt-get upgrade
+
+
+Raspi setup
+install keyboard:
+pip install pynput
+
+pip install wheel
+pip install pandas
+
+sudo apt-get install libxml2-dev libxslt-dev python-dev
+sudo pip2 install -U future lxml
+sudo pip2 install -U pymavlink
+
+install dronekit
+
+To use mobile as screen, install vnc player and use windows remote desktop on mobile to control it:
+sudo apt-get install  tightvncserver
+install xrdp

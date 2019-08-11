@@ -1,0 +1,68 @@
+Install winpython latest version from website.
+
+Once installed install the following:
+pip install mavproxy
+pip install dronekit
+pip install dronekit-sitl
+
+Note:
+dronekit is a programming language
+drone-sit sitl is used to start up a simulated drone
+
+
+Use following command to start a simulated copter:
+dronekit-sitl copter
+
+Navigate to the folder where mavproxy.py is present
+cd C:\Program Files Self\winpython\WPy64bit-version3680\python-3.6.8.amd64\Scripts
+
+Connect the tcp address of dronekit-sitl to an UDP output. This was when you start mission planner you can connect to UDP:1450 and observe data.
+python mavproxy.py --master tcp:127.0.0.1:5760 --out 127.0.0.1:1450
+
+
+FOR RUNNING COPTER 3.7 following was done
+1. Installed cywin64
+2. Set up Eclipse to build waf file
+	Eclipse project location: C:\cygwin64\home\santoshkumar\ardupilot
+
+cd C:\Program Files Self\MAVProxy
+mavproxy.exe --master tcp:127.0.0.1:5760 --out 127.0.0.1:1450
+
+
+open CYGWIN64 terminal and navigate to ArduCopter folder
+Copter version 3.3 is installed by default with Cygwin in C:\cygwin64\home\santoshkumar\ardupilot\ArduCopter
+
+I built latest Copter 3.7 into following location:
+cd C:\cygwin64\home\santoshkumar\ardupilot\build\fmuv3\ArduCopter
+
+Run this command:
+cd ~/ardupilot/ArduCopter
+sim_vehicle.py -N
+sim_vehicle.py --map --console -N
+-N ensures it is not built every time SITL is launched
+--map is not needed coz mision planner will be connected and used
+Note: build directory is: /home/santoshkumar/ardupilot/build/sitl
+
+
+raspi cam setup:
+sudo rpi-update
+sudo apt-get update
+sudo apt-get upgrade
+
+
+Raspi setup
+install keyboard:
+pip install pynput
+
+pip install wheel
+pip install pandas
+
+sudo apt-get install libxml2-dev libxslt-dev python-dev
+sudo pip2 install -U future lxml
+sudo pip2 install -U pymavlink
+
+install dronekit
+
+To use mobile as screen:
+sudo apt-get install  tightvncserver
+install xrdp

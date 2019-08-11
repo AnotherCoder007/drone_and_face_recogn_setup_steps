@@ -1,0 +1,12 @@
+
+Docker commands:
+--To view images
+docker images
+
+--To view containers
+docker ps -a
+
+--To build image 
+docker build --tag=ctrlguidednogpsimage .
+
+docker run ctrlguidednogpsimage

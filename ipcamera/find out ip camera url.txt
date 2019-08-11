@@ -1,0 +1,6 @@
+1. Find the IP camera address (ex.: http://192.168.2.17:80/) from the app. For AOBO I found it from P2PLiveCam app.
+
+2. Enter the IP address in browser with Developer Tools window enabled.
+
+3. Find the IP address that gets stream from camera and use it in the code.
+stream = cv2.VideoCapture('http://admin:@192.168.2.17:80/media/?action=stream')

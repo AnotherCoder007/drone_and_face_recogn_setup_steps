@@ -1,0 +1,18 @@
+
+Reboot the pi
+open terminal window and type the following lines:
+
+sudo hciconfig hci0 down
+sudo hciconfig hci0 up
+bluetoothctl
+scan on
+
+Press the discovery button on the bluetooth device, the device should popup in the terminal along with its bluetooth address, then type the following where X is the bluetooth address :
+
+pair X
+
+A dialogue box should popup stating that the bluetooth device would like to connect, press connect and then the ok button on the next popup.
+
+And your mouse should now work!!!
+
+reboot and do the same for keyboard
