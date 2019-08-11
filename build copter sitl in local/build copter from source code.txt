@@ -1,0 +1,24 @@
+
+FOR RUNNING COPTER 3.7 following was done
+1. Installed cywin64
+2. Set up Eclipse to build waf file
+	Eclipse project location: C:\cygwin64\home\santoshkumar\ardupilot
+
+cd C:\Program Files Self\MAVProxy
+mavproxy.exe --master tcp:127.0.0.1:5760 --out 127.0.0.1:1450
+
+
+open CYGWIN64 terminal and navigate to ArduCopter folder
+Copter version 3.3 is installed by default with Cygwin in C:\cygwin64\home\santoshkumar\ardupilot\ArduCopter
+
+I built latest Copter 3.7 into following location:
+cd C:\cygwin64\home\santoshkumar\ardupilot\build\fmuv3\ArduCopter
+
+Run this command:
+cd ~/ardupilot/ArduCopter
+sim_vehicle.py -N
+sim_vehicle.py --map --console -N
+-N ensures it is not built every time SITL is launched
+--map is not needed coz mision planner will be connected and used
+Note: build directory is: /home/santoshkumar/ardupilot/build/sitl
+

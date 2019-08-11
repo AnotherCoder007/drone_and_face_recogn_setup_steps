@@ -22,3 +22,5 @@ install dronekit
 To use mobile as screen, install vnc player and use windows remote desktop on mobile to control it:
 sudo apt-get install  tightvncserver
 install xrdp
+
+
