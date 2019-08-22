@@ -1,0 +1,4 @@
+1. Open CMD window in machine
+2. Move to location where .pem is placed
+3. From Amazon EC2 dashboard open Connect and copy the SSH command
+4. The command would login
