@@ -1,0 +1,129 @@
+
+
+https://www.smcarlson.com/2019/02/24/installing-dlib-on-aws-lambda/
+
+1. Launch a new EC2 instance:
+  1) On “Choose AMI” screen, select “Amazon Linux AMI 2018.03.0 (HVM), SSD Volume Type” as your AMI.
+   2) On “Step 2: Choose an Instance Type” screen, I suggest to select a medium or large type (mine is t2.large). I tried to use t2.micro but the performance is not good enough for compiling dlib.
+   3) Click “Review and Launch”, then click “Launch”.
+  4) Use your key pair to finalize the configuration.
+
+2. Use ssh to connect to your new EC2 instance with your private kay pair.
+
+3. On your new EC2 Amazon Linux instance, please do following things:
+   1) Install gcc-c++: sudo yum install gcc-c++ -y
+   2) Install cmake: sudo yum install cmake -y
+   3) Install python36: sudo yum install python36 -y
+   4) Install python36-devel: sudo yum install python36-devel -y
+sudo yum install openblas-devel.x86_64 -y
+sudo yum install -y lapack-devel blas-devel
+
+
+4. Install Python dependencies:
+   1) Install Pillow: sudo python3 -m pip install Pillow
+       It will also install “PIL” for you.
+   2) Install face_recognition: sudo python3 -m pip install face_recognition
+       It will also install “face_recognition_modes”, “numpy”, and “dlib”.
+   Above modules will be installed to “/usr/local/lib64/python3.6/site-packages/”. Here is my file list for your reference:
+ [ec2-user@ip-xxx-xx-xx-xxx ~]$ ls /usr/local/lib64/python3.6/site-packages/ -l
+   total 9652
+   drwxr-xr-x  2 root root    4096 Feb 22 08:08 dlib-19.16.0.egg-info
+   -rwxr-xr-x  1 root root 9852368 Feb 22 08:08 dlib.cpython-36m-x86_64-linux-gnu.so
+   drwxr-xr-x 18 root root    4096 Feb 22 08:08 numpy
+   drwxr-xr-x  2 root root    4096 Feb 22 08:08 numpy-1.16.1.dist-info
+   drwxr-xr-x  4 root root    4096 Feb 22 08:00 PIL
+   drwxr-xr-x  2 root root    4096 Feb 22 08:00 Pillow-5.4.1.dist-info
+
+
+5. Zip above mentioned “/site-packages” directory and download your zip file.
+
+6. On your local machine, unzip above mentioned zip file. Then make some new folders for each module. 
+   Here is my file structure for your reference:
+   dlib
+      + python
+               + dlib.so (I renamed “dlib.cpython-36m-x86_64-linux-gnu.so” to “dlib.so”)
+
+   face_recognition
+      + python
+               ¦ face_recognition (directory and its contents)
+               + face_recognition-1.2.3.dist-info (directory and its contents)
+
+   face_recognition_models
+      + python
+               ¦ face_recognition_models (directory and its contents)
+               + face_recognition_models-0.3.0.egg-info (directory and its contents)
+
+   numpy
+      + python
+               ¦ numpy (directory and its contents)
+               + numpy-1.16.1.dist-info (directory and its contents)
+
+   PILPillow
+      + python
+               ¦ PIL (directory and its contents)
+               + Pillow-5.4.1.dist-info (directory and its contents)
+
+7. Zip each “python” directory under above five folders. You will get 5 “python.zip” files. These files are for Lambda layers.
+
+8. Open AWS Lambda console. Create 5 new lambda layers for above zip files. Upload these zip files to each layer correspondingly. Here are some details:
+   ——————————————————————–
+   Name                                                    Runtime
+   ——————————————————————–
+   PILPillow                                              Python 3.6
+   dlib                                                       Not specified
+   face_recognition                                 Python 3.6
+   face_recognition_models                   Python 3.6
+   numpy                                                  Python 3.6
+   ——————————————————————–
+   Please note, “python.zip” of “face_recognition_models” is too large (approx. 100.6MB) to be uploaded from console webpage, you have to upload it to a S3 bucket first, mark it public, and then upload to Lambda layer from your S3 bucket.
+
+9. Create a new Lambda function, add above 5 layers to your Lambda function, select Python 3.6 as runtime. Then upload your Python code with a test jpeg picture. Here is my “lambda_function.py” for your reference:
+   ——————————————————————–
+   import face_recognition
+   import json
+
+   print(“cold start”)
+
+   def lambda_handler(event, context):
+       fileName = “1.jpeg”
+
+       print(“start face recognition…”)
+
+       image = face_recognition.load_image_file(str(fileName))
+       encoding = face_recognition.face_locations(image)
+
+       print(“face recognition finish…”)
+
+       return {
+           ‘statusCode’: 200,
+           ‘body’: json.dumps(encoding[0])
+       }
+   ——————————————————————–
+   Please note, in my case, I use “1.jpeg” for testing only.
+
+10. Increase your Lambda function’s memory to about 512 MB. The default 3s timeout is enough for simple request. In my case, the running status are:
+   ——————————————————————–
+   Duration: 174.37 ms
+   Billed Duration: 200 ms
+   Memory Size: 512 MB
+   Max Memory Used: 400 MB	
+   ——————————————————————–
+   Please note, the memory and timeout should be updated as your functionality needs.
+
+Explanations:
+————————————————————————–
+1. When install “dlib” and “Pillow”, they will compile some library files locally. To make sure these executables working, we need a environment similar with Lambda’s so the EC2 is for this purpose.
+2. I firstly build/install everything on my EC2 with its pre-installed Python 2, but some libraries can’t be invoked by Lambda. Then I switch to Python 3, that’s what we did in step 3 and 4.
+3. To build dlib and other libraries, you should install Python development tools “python36-devel”. Because dlib is written in C++, so we also need to install gcc-c++ and cmake.
+4. After include all of these 5 layers, you can verify your /opt files list with mine (as attachment “Opt_file_list.txt”). You can get the file list by:
+   ——————————————————————————————
+   import os
+   directories = os.popen(“find /opt/* -type d –maxdepth 4?).read().split(“\n”)
+   return {
+       ‘directories’: directories
+   }
+   ——————————————————————————————
+5. Increasing memory allocation is important, otherwise you will encounter timeout issue.
+6. Be aware of Lambda total unzipped deployment files (includes your code/dependencies) size limitation, which is 250 MB. If your Lambda function has multiple layers, the total deployment size then is the sum of all referenced layers plus the Lambda itself. Please make sure the total size is within this limitation.
+7. In production, the image file should be stored in storage services like S3. The jpeg file I upload to my Lambda function is just for testing.
+8. Your functionality may vary from my POC, so you may need to increase the timeout and memory for advance processing.

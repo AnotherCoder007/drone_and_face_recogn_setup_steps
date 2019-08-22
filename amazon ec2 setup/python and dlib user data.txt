@@ -1,0 +1,14 @@
+#!/bin/bash
+cd /
+sudo dd if=/dev/zero of=swapfile bs=1M count=3000
+sudo mkswap swapfile
+sudo swapon swapfile
+
+sudo yum install gcc-c++ -y
+sudo yum install cmake -y
+sudo yum install python36 -y
+sudo yum install python36-devel -y
+sudo yum install openblas-devel.x86_64 -y
+sudo yum install -y lapack-devel blas-devel
+sudo python3 -m pip install Pillow
+sudo python3 -m pip install face_recognition
