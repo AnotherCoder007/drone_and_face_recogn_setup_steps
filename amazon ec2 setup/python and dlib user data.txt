@@ -12,3 +12,4 @@ sudo yum install openblas-devel.x86_64 -y
 sudo yum install -y lapack-devel blas-devel
 sudo python3 -m pip install Pillow
 sudo python3 -m pip install face_recognition
+sudo python3 -m pip install flask
