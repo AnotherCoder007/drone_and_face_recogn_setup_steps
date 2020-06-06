@@ -1,0 +1,43 @@
+Used following two links for step by step instructions:
+https://howchoo.com/g/nmrlzmq1ymn/how-to-install-docker-on-your-raspberry-pi#add-dockers-gpg-key
+https://docs.docker.com/install/linux/docker-ce/debian/#install-using-the-convenience-script
+
+sudo apt-get update
+
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg2 \
+    software-properties-common
+
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+
+
+https://docs.docker.com/install/linux/docker-ce/debian/#install-using-the-convenience-script
+
+#Add the following to /etc/apt/sources.list using following command
+sudo vim /etc/apt/sources.list
+
+
+#Note that I have used "nightly". It should be made stable later.
+deb [arch=armhf] https://download.docker.com/linux/raspbian buster nightly
+
+#run the following after making changes to source file
+sudo apt-get update
+
+
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+#Test version of docker installed
+docker --version
+
+#POST INSTALLATION STEPS:
+sudo groupadd docker
+sudo usermod -aG docker $(whoami)
+#Log out and log back in to ensure docker runs with correct permissions.
+#Start docker:
+sudo service docker start
+
